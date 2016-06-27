@@ -1,12 +1,13 @@
 var _ = require('lodash');
 var express = require('express');
 var router = express.Router();
-var scooterService = require('../services/scooters');
+var ScooterService = require('../services/scooters');
+var UserService = require('../services/users');
 
 /* GET scooters listing. */
 router.get('/', function(req, res) {
     if (req.accepts('application/json')) {
-        scooterService.findAll()
+        ScooterService.findAll()
             .then(function(scooters){
                 res.status(200).send({'scooters': scooters});
             })
@@ -18,13 +19,13 @@ router.get('/', function(req, res) {
 
 var bodyVerificator = function(req, res, next) {
     var attributes = _.keys(req.body);
-    var mandatoryAttributes = ['name'];
+    var mandatoryAttributes = ['name','owner_id'];
     var missingAttributes = _.difference(mandatoryAttributes, attributes);
     if (missingAttributes.length) {
-        res.status(400).send({err: missingAttributes.toString()});
+        res.status(400).send({err: missingAttributes.toString() + ' are mandatory'});
     }
     else {
-        if (req.body.name) {
+        if (req.body.name && req.body.owner_id) {
             next();
         }
         else {
@@ -37,14 +38,19 @@ var bodyVerificator = function(req, res, next) {
 router.post('/', bodyVerificator, function(req, res) {
 
     if (req.accepts('application/json')) {
-        scooterService.findOneByQuery({name: req.body.name})
+        ScooterService.findOneByQuery({name: req.body.name})
             .then(function(scooter) {
                 if (scooter) {
                     res.send(409, {err: 'Existing scooter'});
                     return;
                 } else {
-                    scooterService.createScooter(req.body)
+                    ScooterService.createScooter(req.body)
                         .then(function(scooter) {
+                            UserService.addScooterToUser(req.body.owner_id, scooter.id)
+                                .catch(function (err) {
+                                    res.status(500).send(err);
+                                    return;
+                                });
                             res.status(200).send(scooter);
                             return;
                         })
@@ -63,7 +69,7 @@ router.post('/', bodyVerificator, function(req, res) {
 });
 
 router.get('/:id', function(req, res) {
-    scooterService.findOneByQuery({_id: req.params.id})
+    ScooterService.findOneByQuery({_id: req.params.id})
         .then(function (scooter) {
             if (!scooter) {
                 res.status(404).send({err: 'No scooter found with id '.req.params.id});
@@ -77,6 +83,51 @@ router.get('/:id', function(req, res) {
         })
     ;
 
+});
+
+router.put('/:id', function(req, res) {
+    ScooterService.updateScooterById(req.params.id, req.body)
+        .then(function (scooter) {
+            if (!scooter) {
+                res.status(404).send({err: 'No scooter found with id' + req.params.id});
+                return;
+            }
+            if (req.accepts('application/json')) {
+                res.status(200).send(scooter);
+            }
+        })
+        .catch(function (err) {
+            res.status(500).send(err);
+        })
+    ;
+});
+
+router.delete('/:id', function(req, res) {
+    ScooterService.findOneByQuery({_id: req.params.id})
+        .then(function (scooter){
+            if(scooter)
+            {
+                UserService.deleteScooterToUser(scooter.owner_id, req.params.id)
+                    .then(function() {
+                        ScooterService.delete({_id: req.params.id})
+                            .then(function() {
+                                res.status(204).send();
+                            })
+                            .catch(function(err) {
+                                res.status(500).send(err);
+                            })
+                        ;
+                    })
+                    .catch(function(err) {
+                        res.status(500).send(err);
+                    });
+            } else {
+                res.status(404).send({err: 'No scooter found with id' + req.params.id});
+            }
+        })
+        .catch(function (err) {
+            res.status(500).send(err);
+        });
 });
 
 module.exports = router;

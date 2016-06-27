@@ -25,3 +25,12 @@ exports.findLastScooters = function() {
 exports.createScooter = function(scooter) {
     return Scooters.createAsync(scooter);
 };
+
+exports.updateScooterById = function(scooterId, scooterToUpdate) {
+    return Scooters.findOneAndUpdateAsync({_id: scooterId}, scooterToUpdate, {new: true});
+};
+
+exports.delete = function(query) {
+    console.log('here');
+    return Scooters.removeAsync(query);
+};

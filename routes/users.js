@@ -18,55 +18,7 @@ router.get('/', function(req, res, next) {
     ;
 });
 
-router.get('/me', function(req, res, next) {
-    UserService.findOneByQuery({_id: req.user._id})
-        .then(function (user) {
-            SongService.findWhereIdIn(user.favoriteSongs)
-                .then(function(songs) {
-                    RelationshipService.findWhereConcerned(req.user._id)
-                        .then(function(relations) {
-                            var friends = [];
-                            var pendings = [];
-                            var gottaAnswer = [];
-                            relations.forEach(function(relation){
-                                if(relation.confirmed) {
-                                    if(relation.enquirer_id.toString() === req.user._id.toString())
-                                    {
-                                        friends.push({id: relation._id, friend_id:relation.target_id, friend_name: relation.target_name});
-                                    } else {
-                                        friends.push({id: relation._id, friend_id:relation.enquirer_id, friend_name: relation.enquirer_name});
-                                    }
-                                } else {
-                                    if(relation.enquirer_id.toString() === req.user._id.toString())
-                                    {
-                                        pendings.push({id: relation._id, friend_id:relation.target_id, friend_name: relation.target_name});
-                                    } else {
-                                        gottaAnswer.push({id: relation._id, friend_id:relation.enquirer_id, friend_name: relation.enquirer_name});
-                                    }
-                                }
-                            });
-                            if (req.accepts('text/html')) {
-                                return res.render('me', {user: user, songs: songs, relationships: {friends: friends, pendings: pendings, gottaAnswer: gottaAnswer}});
-                            }
-                            if (req.accepts('application/json')) {
-                                res.status(200).send({user: user, songs: songs, relationships: {friends: friends, pendings: pendings, gottaAnswer: gottaAnswer}});
-                            }
-                        })
-                        .catch(function (err) {
-                            res.status(500).send(err);
-                        });
-                })
-                .catch(function (err) {
-                    res.status(500).send(err);
-                });
-        })
-        .catch(function (err) {
-            res.status(500).send(err);
-        })
-    ;
-});
-
-router.get('/:id', function(req, res, next) {
+router.get('/:id', function(req, res) {
     UserService.findOneByQuery({_id: req.params.id})
             .then(function (user) {
                 if (!user) {
@@ -105,7 +57,6 @@ var bodyVerificator = function(req, res, next) {
 
 router.post('/', bodyVerificator, function(req, res) {
     if (req.accepts('application/json')) {
-        //return res.status(200).send(UserService);
         UserService.findOneByQuery({username: req.body.username})
             .then(function(user) {
                 if (user) {
