@@ -3,6 +3,7 @@ var express = require('express');
 var bcrypt = require('bcrypt');
 var router = express.Router();
 var UserService = require('../services/users');
+var passport = require('passport');
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
@@ -20,22 +21,20 @@ router.get('/', function(req, res, next) {
 
 router.get('/:id', function(req, res) {
     UserService.findOneByQuery({_id: req.params.id})
-            .then(function (user) {
-                if (!user) {
-                    res.status(404).send({err: 'No user found with id '.req.params.id});
-                    return;
-                } else if (req.accepts('application/json'))
-                {
-                    res.status(200).send({user: user});
-                }
-            })
-            .catch(function (err) {
-                res.status(500).send(err);
-            })
-        ;
+        .then(function (user) {
+            if (!user) {
+                res.status(404).send({err: 'No user found with id '.req.params.id});
+                return;
+            } else if (req.accepts('application/json'))
+            {
+                res.status(200).send({user: user});
+            }
+        })
+        .catch(function (err) {
+            res.status(500).send(err);
+        })
+    ;
 });
-
-
 
 var bodyVerificator = function(req, res, next) {
     var attributes = _.keys(req.body);

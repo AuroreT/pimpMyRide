@@ -3,7 +3,6 @@ var Promise = require('bluebird');
 var Scooters = Promise.promisifyAll(require('../database/scooters'));
 
 exports.findOneByQuery = function(query) {
-    console.log(query);
     return Scooters.findOneAsync(query);
 };
 
@@ -31,6 +30,5 @@ exports.updateScooterById = function(scooterId, scooterToUpdate) {
 };
 
 exports.delete = function(query) {
-    console.log('here');
     return Scooters.removeAsync(query);
 };

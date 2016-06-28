@@ -7,7 +7,8 @@ var UserService = require('../services/users');
 /* GET scooters listing. */
 router.get('/', function(req, res) {
     if (req.accepts('application/json')) {
-        ScooterService.findAll()
+        //console.log(req.user._id);
+        ScooterService.findWhereIdIn(req.user.scooters)
             .then(function(scooters){
                 res.status(200).send({'scooters': scooters});
             })
@@ -19,13 +20,13 @@ router.get('/', function(req, res) {
 
 var bodyVerificator = function(req, res, next) {
     var attributes = _.keys(req.body);
-    var mandatoryAttributes = ['name','owner_id'];
+    var mandatoryAttributes = ['name'];
     var missingAttributes = _.difference(mandatoryAttributes, attributes);
     if (missingAttributes.length) {
         res.status(400).send({err: missingAttributes.toString() + ' are mandatory'});
     }
     else {
-        if (req.body.name && req.body.owner_id) {
+        if (req.body.name) {
             next();
         }
         else {
@@ -44,6 +45,7 @@ router.post('/', bodyVerificator, function(req, res) {
                     res.send(409, {err: 'Existing scooter'});
                     return;
                 } else {
+                    req.body.owner_id = req.user._id;
                     ScooterService.createScooter(req.body)
                         .then(function(scooter) {
                             UserService.addScooterToUser(req.body.owner_id, scooter.id)

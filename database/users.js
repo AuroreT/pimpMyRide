@@ -1,7 +1,7 @@
 'use strict';
 var mongoose = require('mongoose');
 
-var userSchema = mongoose.Schema({
+var UserSchema = mongoose.Schema({
     username: {type: String, required: true},
     password: {type: String, required: true, select: false},
     displayName: {type: String, required: true},
@@ -10,4 +10,14 @@ var userSchema = mongoose.Schema({
     scooters: [mongoose.Schema.Types.ObjectId]
 });
 
-module.exports = mongoose.model('user', userSchema);
+UserSchema.plugin(require('mongoose-token'), {
+    tokenPath   : 'token',
+    expiresPath : 'tokenExpires',
+    setMethod   : 'setToken',
+    getByMethod : 'getByToken',
+    resetMethod : 'resetToken',
+    tokenLength : 20,
+    expire      : 1 * 60 * 60 * 1000 // 1 hour
+});
+
+module.exports = mongoose.model('user', UserSchema);

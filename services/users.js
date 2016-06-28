@@ -3,7 +3,6 @@ var Promise = require('bluebird');
 var Users = Promise.promisifyAll(require('../database/users'));
 
 exports.findOneByQuery = function(query) {
-    console.log(query);
     return Users.findOneAsync(query);
 };
 
@@ -39,4 +38,12 @@ exports.deleteScooterToUser = function(user_id, scooter_id){
         {$pull:{scooters: scooter_id}},
         {new:true }
     );
+};
+
+exports.findSelectPassword = function(username){
+    return Users.findOne({ username: username }).select('+password').exec();
+};
+
+exports.findByToken = function(token) {
+    return Users.findOne({token: token, tokenExpires: {$gt: Date.now()}});
 };
