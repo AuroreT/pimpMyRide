@@ -20,7 +20,8 @@
     "passport": "^0.3.2",
     "passport-local": "^1.0.0",
     "serve-favicon": "^2.3.0",
-    "passport-unique-token": "latest"
+    "passport-unique-token": "latest",
+    "mongoose-token": "latest"
   },
   "devDependencies": {
     "gulp": "^3.9.0",
