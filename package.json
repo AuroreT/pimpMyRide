@@ -21,13 +21,13 @@
     "passport-local": "^1.0.0",
     "serve-favicon": "^2.3.0",
     "passport-unique-token": "latest",
-    "mongoose-token": "latest"
+    "mongoose-token": "latest",
+    "dotenv": "latest"
   },
   "devDependencies": {
     "gulp": "^3.9.0",
     "gulp-livereload": "^3.8.0",
     "gulp-nodemon": "^2.0.2",
-    "gulp-plumber": "^1.0.0",
-    "dotenv": "latest"
+    "gulp-plumber": "^1.0.0"
   }
 }
