@@ -1,7 +1,6 @@
 'use strict';
 var mongoose = require('mongoose');
-//var mongolabStringConnexion ='mongodb://localhost:27017/pimpMyRide';
-var mongolabStringConnexion ='mongodb://Matthieu:Matthieu@ds019664.mlab.com:19664/heroku_kkbrq05t';
+var mongolabStringConnexion = process.env.MONGODB_URI;
 
 mongoose.connect(mongolabStringConnexion);
 var db = mongoose.connection;

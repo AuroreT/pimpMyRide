@@ -17,7 +17,7 @@ UserSchema.plugin(require('mongoose-token'), {
     getByMethod : 'getByToken',
     resetMethod : 'resetToken',
     tokenLength : 20,
-    expire      : 1 * 60 * 60 * 1000 // 1 hour
+    expire      : 24 * 60 * 60 * 1000 // 24 hour
 });
 
 module.exports = mongoose.model('user', UserSchema);

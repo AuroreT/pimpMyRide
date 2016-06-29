@@ -1,3 +1,4 @@
+var dotenv = require('dotenv').config();
 var express = require('express');
 var passport = require('passport');
 var path = require('path');
@@ -70,7 +71,7 @@ app.use(passport.session());
 app.use(passport.authenticate('token'));
 var verifyAuth = function(req, res, next) {
 
-    if (req.originalUrl === '/token' || req.originalUrl === '/users') {
+    if (req.originalUrl === '/token') {
         return next();
     }
     if (req.isAuthenticated()) {

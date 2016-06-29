@@ -38,9 +38,15 @@ router.post('/', bodyVerificator, function(req, res) {
             return res.status(404).send({err: 'No matching user'});
         }
 
-        user.setToken().then(function(user){
+        if(user.tokenExpires > Date.now())
+        {
             return res.status(200).send({token: user.token});
-        });
+        } else {
+            user.setToken().then(function(user){
+                return res.status(200).send({token: user.token});
+            });
+        }
+
 
     });
 });

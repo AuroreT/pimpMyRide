@@ -19,6 +19,10 @@ router.get('/', function(req, res, next) {
     ;
 });
 
+router.get('/me', function(req, res) {
+    res.status(200).send({user: req.user});
+});
+
 router.get('/:id', function(req, res) {
     UserService.findOneByQuery({_id: req.params.id})
         .then(function (user) {
@@ -67,8 +71,10 @@ router.post('/', bodyVerificator, function(req, res) {
                     req.body.password = hash;
                     UserService.createUser(req.body)
                         .then(function(user) {
-                            return res.status(200).send(user);
-
+                            user.setToken().then( function(user) {
+                                    return res.status(200).send(user);
+                                }
+                            )
                         });
                 }
             });

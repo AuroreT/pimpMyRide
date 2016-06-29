@@ -7,6 +7,7 @@ var scooterSchema = mongoose.Schema({
     lng: Number,
     phone: Number,
     temperature: Number,
+    humidity: Number,
     speed: Number,
     owner_id: {type: mongoose.Schema.Types.ObjectId, required: true}
 });
