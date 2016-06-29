@@ -52,7 +52,7 @@ app.use(function (req, res, next) {
     res.setHeader('Access-Control-Allow-Credentials', true);
 
 
-    res.setHeader('Access-Control-Expose-Headers', 'token');
+    res.setHeader('Access-Control-Expose-Headers', '*');
 
     // Pass to next layer of middleware
     next();
@@ -74,7 +74,8 @@ app.use(passport.session());
 app.use(passport.authenticate('token'));
 var verifyAuth = function(req, res, next) {
 
-    if (req.originalUrl === '/token') {
+    console.log(req.method);
+    if (req.originalUrl === '/token' || (req.originalUrl === '/users' &&  req.method === 'POST')) {
         return next();
     }
     if (req.isAuthenticated()) {
