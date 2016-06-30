@@ -9,9 +9,7 @@ var passport = require('passport');
 router.get('/', function(req, res, next) {
     UserService.findAll()
         .then(function (users) {
-            if (req.accepts('application/json')) {
-                res.status(200).send(users);
-            }
+            res.status(200).send(users);
         })
         .catch(function (err) {
             res.status(500).send(err);
@@ -29,7 +27,7 @@ router.get('/:id', function(req, res) {
             if (!user) {
                 res.status(404).send({err: 'No user found with id '.req.params.id});
                 return;
-            } else if (req.accepts('application/json'))
+            } else
             {
                 res.status(200).send({user: user});
             }
@@ -59,29 +57,41 @@ var bodyVerificator = function(req, res, next) {
 };
 
 router.post('/', bodyVerificator, function(req, res) {
-    if (req.accepts('application/json')) {
-        UserService.findOneByQuery({username: req.body.username})
-            .then(function(user) {
-                if (user) {
-                    res.status(409).send({err: 'Existing user'});
-                    return;
-                } else {
-                    var salt = bcrypt.genSaltSync(10);
-                    var hash = bcrypt.hashSync(req.body.password, salt);
-                    req.body.password = hash;
-                    UserService.createUser(req.body)
-                        .then(function(user) {
-                            user.setToken().then( function(user) {
-                                    return res.status(200).send(user);
-                                }
-                            )
-                        });
-                }
-            });
-    } else {
-        res.send(406, {err: 'Not valid type for asked ressource'});
-        return;
-    }
+    UserService.findOneByQuery({username: req.body.username})
+        .then(function(user) {
+            if (user) {
+                res.status(409).send({err: 'Existing user'});
+                return;
+            } else {
+                var salt = bcrypt.genSaltSync(10);
+                var hash = bcrypt.hashSync(req.body.password, salt);
+                req.body.password = hash;
+                UserService.createUser(req.body)
+                    .then(function(user) {
+                        user.setToken().then( function(user) {
+                                return res.status(200).send(user);
+                            }
+                        )
+                    })
+                ;
+            }
+        })
+    ;
+});
+
+router.put('/', function(req, res) {
+    UserService.updateUserById(req.user._id, req.body)
+        .then(function (user) {
+            if (!user) {
+                res.status(404).send({err: 'No scooter found with id' + req.params.id});
+            } else {
+                res.status(200).send(user);
+            }
+        })
+        .catch(function (err) {
+            res.status(500).send(err);
+        })
+    ;
 });
 
 module.exports = router;

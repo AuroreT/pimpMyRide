@@ -51,17 +51,4 @@ router.post('/', bodyVerificator, function(req, res) {
     });
 });
 
-//router.post('/', passport.authenticate('token', {
-//        successRedirect: '/users',
-//        failureRedirect: '/'
-//    })
-//);
-
-//router.post('/', function(req, res) {
-//
-//        res.status(200).send({'page': 'index'});
-//}
-//);
-
-
 module.exports = router;

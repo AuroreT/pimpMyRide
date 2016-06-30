@@ -10,7 +10,8 @@ var scooterSchema = mongoose.Schema({
     humidity: Number,
     speed: Number,
     owner_id: {type: mongoose.Schema.Types.ObjectId, required: true},
-    isUsed: {type: Boolean, default: false}
+    isUsed: {type: Boolean, default: false},
+    arduinoID: {type: String, required: true}
 });
 
 module.exports = mongoose.model('scooter', scooterSchema);

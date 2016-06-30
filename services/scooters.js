@@ -29,6 +29,10 @@ exports.updateScooterById = function(scooterId, scooterToUpdate) {
     return Scooters.findOneAndUpdateAsync({_id: scooterId}, scooterToUpdate, {new: true});
 };
 
+exports.updateScooterByArduinoId = function(arduinoId, scooterToUpdate) {
+    return Scooters.findOneAndUpdateAsync({arduinoId: arduinoId}, scooterToUpdate, {new: true});
+};
+
 exports.delete = function(query) {
     return Scooters.removeAsync(query);
 };

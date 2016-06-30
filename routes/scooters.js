@@ -6,21 +6,19 @@ var UserService = require('../services/users');
 
 /* GET scooters listing. */
 router.get('/', function(req, res) {
-    if (req.accepts('application/json')) {
-        //console.log(req.user._id);
-        ScooterService.findWhereIdIn(req.user.scooters)
-            .then(function(scooters){
-                res.status(200).send({'scooters': scooters});
-            })
-            .catch(function (err) {
-                res.status(500).send(err);
-            });
-    }
+    ScooterService.findWhereIdIn(req.user.scooters)
+        .then(function(scooters){
+            res.status(200).send({'scooters': scooters});
+        })
+        .catch(function (err) {
+            res.status(500).send(err);
+        })
+    ;
 });
 
 var bodyVerificator = function(req, res, next) {
     var attributes = _.keys(req.body);
-    var mandatoryAttributes = ['name'];
+    var mandatoryAttributes = ['name','arduinoID'];
     var missingAttributes = _.difference(mandatoryAttributes, attributes);
     if (missingAttributes.length) {
         res.status(400).send({err: missingAttributes.toString() + ' are mandatory'});
@@ -37,37 +35,32 @@ var bodyVerificator = function(req, res, next) {
 };
 
 router.post('/', bodyVerificator, function(req, res) {
-
-    if (req.accepts('application/json')) {
-        ScooterService.findOneByQuery({name: req.body.name})
-            .then(function(scooter) {
-                if (scooter) {
-                    res.send(409, {err: 'Existing scooter'});
-                    return;
-                } else {
-                    req.body.owner_id = req.user._id;
-                    ScooterService.createScooter(req.body)
-                        .then(function(scooter) {
-                            UserService.addScooterToUser(req.body.owner_id, scooter.id)
-                                .catch(function (err) {
-                                    res.status(500).send(err);
-                                    return;
-                                });
-                            res.status(200).send(scooter);
-                            return;
-                        })
-                        .catch(function (err) {
-                            res.status(500).send(err);
-                        });
-                }
-            })
-            .catch(function (err) {
-                res.status(500).send(err);
-            });
-    } else {
-        res.send(406, {err: 'Not valid type for asked ressource'});
-        return;
-    }
+    ScooterService.findOneByQuery({name: req.body.name})
+        .then(function(scooter) {
+            if (scooter) {
+                res.send(409, {err: 'Existing scooter'});
+                return;
+            } else {
+                req.body.owner_id = req.user._id;
+                ScooterService.createScooter(req.body)
+                    .then(function(scooter) {
+                        UserService.addScooterToUser(req.body.owner_id, scooter.id)
+                            .catch(function (err) {
+                                res.status(500).send(err);
+                                return;
+                            });
+                        res.status(200).send(scooter);
+                        return;
+                    })
+                    .catch(function (err) {
+                        res.status(500).send(err);
+                    });
+            }
+        })
+        .catch(function (err) {
+            res.status(500).send(err);
+        })
+    ;
 });
 
 router.get('/:id', function(req, res) {
@@ -75,7 +68,7 @@ router.get('/:id', function(req, res) {
         .then(function (scooter) {
             if (!scooter) {
                 res.status(404).send({err: 'No scooter found with id '.req.params.id});
-            } else if (req.accepts('application/json'))
+            } else
             {
                 res.status(200).send({scooter: scooter});
             }
@@ -87,16 +80,15 @@ router.get('/:id', function(req, res) {
 
 });
 
-router.put('/:id', function(req, res) {
-    ScooterService.updateScooterById(req.params.id, req.body)
+router.put('/:arduinoID', function(req, res) {
+    ScooterService.updateScooterByArduinoId(req.params.arduinoID, req.body)
         .then(function (scooter) {
             if (!scooter) {
                 res.status(404).send({err: 'No scooter found with id' + req.params.id});
                 return;
             }
-            if (req.accepts('application/json')) {
-                res.status(200).send(scooter);
-            }
+            res.status(200).send(scooter);
+
         })
         .catch(function (err) {
             res.status(500).send(err);

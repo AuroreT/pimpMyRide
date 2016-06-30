@@ -47,3 +47,7 @@ exports.findSelectPassword = function(username){
 exports.findByToken = function(token) {
     return Users.findOne({token: token, tokenExpires: {$gt: Date.now()}});
 };
+
+exports.updateUserById = function(userId, userToUpdate) {
+    return Users.findOneAndUpdateAsync({_id: userId}, userToUpdate, {new: true});
+};
