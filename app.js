@@ -51,8 +51,13 @@ app.use(function (req, res, next) {
 
     res.setHeader('Access-Control-Expose-Headers', '*');
 
-    // Pass to next layer of middleware
-    next();
+
+    if ('OPTIONS' == req.method) {
+        res.send(200);
+    }
+    else {
+        next();
+    }
 });
 
 
