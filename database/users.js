@@ -7,8 +7,7 @@ var UserSchema = mongoose.Schema({
     displayName: {type: String, required: true},
     email: {type: String, required: true},
     createdAt: {type: Date, 'default': Date.now},
-    scooters: [mongoose.Schema.Types.ObjectId],
-    isUsed: {type: Boolean, default: false}
+    scooters: [mongoose.Schema.Types.ObjectId]
 });
 
 UserSchema.plugin(require('mongoose-token'), {

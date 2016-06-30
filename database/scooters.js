@@ -9,7 +9,8 @@ var scooterSchema = mongoose.Schema({
     temperature: Number,
     humidity: Number,
     speed: Number,
-    owner_id: {type: mongoose.Schema.Types.ObjectId, required: true}
+    owner_id: {type: mongoose.Schema.Types.ObjectId, required: true},
+    isUsed: {type: Boolean, default: false}
 });
 
 module.exports = mongoose.model('scooter', scooterSchema);
