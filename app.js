@@ -9,9 +9,6 @@ var bodyParser = require('body-parser');
 var authentication = require('./services/authentication');
 
 var routes = require('./routes/index');
-var speeds = require('./routes/speed');
-var temperatures = require('./routes/temperature');
-var positions = require('./routes/position');
 var users = require('./routes/users');
 var scooters = require('./routes/scooters');
 var token = require('./routes/token');
@@ -89,9 +86,6 @@ var verifyAuth = function(req, res, next) {
 app.use(verifyAuth);
 
 app.use('/', routes);
-app.use('/speeds', speeds);
-app.use('/temperatures', temperatures);
-app.use('/positions', positions);
 app.use('/users', users);
 app.use('/scooters', scooters);
 app.use('/token', token);
