@@ -30,7 +30,7 @@ exports.updateScooterById = function(scooterId, scooterToUpdate) {
 };
 
 exports.updateScooterByArduinoId = function(arduinoId, scooterToUpdate) {
-    return Scooters.findOneAndUpdateAsync({arduinoId: arduinoId}, scooterToUpdate, {new: true});
+    return Scooters.findOneAndUpdateAsync({arduinoID: arduinoId}, scooterToUpdate, {new: true});
 };
 
 exports.delete = function(query) {
